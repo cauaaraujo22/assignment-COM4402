@@ -69,7 +69,7 @@ def choose_feedback_mode():
         print("Please type A or B.")
 
 
-def read_how_many(max_q):
+def set_total_questions(max_q):
     while True:
         raw = input(f"How many questions do you want? (1-{max_q}): ").strip()
         if raw.isdigit():
@@ -121,17 +121,18 @@ def run_session(question_set, instant_feedback):
     score = 0
     wrong_log = []
 
-    for idx, (q_text, opts, ans_text) in enumerate(question_set, start=1):
+    for idx, q in enumerate(question_set, start=1):
+        (q_text, opts, ans_text) = q
         ok, chosen, correct, shown = ask_question(idx, q_text, opts, ans_text, instant_feedback)
         if ok:
             score += 1
         else:
             wrong_log.append({
-                "n": idx,
-                "q": q_text,
-                "shown": shown,
-                "chosen": chosen,
-                "correct": correct
+                "n": idx,   # question number in this quiz session
+                "q": q_text,    # the question text shown to the user
+                "shown": shown, # the answer options in the exact order displayed
+                "chosen": chosen,   # the letter the user selected
+                "correct": correct  # the correct letter
             })
 
     return score, wrong_log
@@ -152,15 +153,16 @@ def review_mistakes(wrong_log):
     print("\nReview of incorrect answers:")
     for item in wrong_log:
         print("\n" + "-" * 60)
-        print(f"Q{item['n']}. {item['q']}")
-        for i, opt in enumerate(item["shown"]):
-            letter = "ABCD"[i]
-            tag = ""
-            if letter == item["correct"]:
+        
+        print(f"Q{item['n']}. {item['q']}")     # item["n"] = question number, item["q"] = question text
+        for i, opt in enumerate(item["shown"]):      # item["shown"] is the list of options in the exact order shown to the user (A-D)
+            letter = "ABCD"[i]      # Convert index 0-3 into letters A-D
+            tag = ""        # tag is extra text we add to the line (to mark correct / your choice)
+            if letter == item["correct"]:        # If this option letter matches the correct letter, mark it as correct
                 tag = "  <-- correct"
-            if letter == item["chosen"]:
+            if letter == item["chosen"]:          # If this option letter matches the user's chosen letter, mark it as your choice
                 tag = (tag + " / your choice").strip() if tag else "  <-- your choice"
-            print(f"  {letter}) {opt}{tag}")
+            print(f"  {letter}) {opt}{tag}")        # Print the option with any tag added
 
 
 def play_again():
@@ -179,15 +181,15 @@ def main():
     while True:
         player = read_name()
         mode = choose_feedback_mode()
-        instant = (mode == "A")
+        instant_feedback = True if mode == "A" else False
 
-        count = read_how_many(len(bank))
+        count = set_total_questions(len(bank))
         chosen_questions = pick_quiz_set(bank, count)
 
-        score, wrong_log = run_session(chosen_questions, instant)
+        score, wrong_log = run_session(chosen_questions, instant_feedback)
         show_summary(player, score, count)
 
-        if not instant:
+        if not instant_feedback:
             want_review = input("Would you like to review incorrect answers? (Y/N): ").strip().upper()
             if want_review == "Y":
                 review_mistakes(wrong_log)
