@@ -1,7 +1,7 @@
 import random
 
 
-def make_rio_bank():
+def rio_bank():
     # Each item: (question_text, [4 options], correct_option_text)
     return [
         ("Rio de Janeiro is the capital of which Brazilian state?",
@@ -174,7 +174,7 @@ def play_again():
 def main():
     print("Welcome to the Rio de Janeiro Multiple-Choice Quiz!")
 
-    bank = make_rio_bank()
+    bank = rio_bank()
 
     while True:
         player = read_name()
