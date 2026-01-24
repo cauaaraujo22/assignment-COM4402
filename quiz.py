@@ -174,7 +174,7 @@ def play_again():
 
 
 def main():
-    print("Welcome to the Rio de Janeiro Multiple-Choice Quiz!")
+    print("\nWelcome to the Rio de Janeiro Multiple-Choice Quiz!")
 
     bank = rio_bank()
 
@@ -185,6 +185,7 @@ def main():
 
         count = set_total_questions(len(bank))
         chosen_questions = pick_quiz_set(bank, count)
+        print(f"you chose to answer {count} questions.")
 
         score, wrong_log = run_session(chosen_questions, instant_feedback)
         show_summary(player, score, count)
